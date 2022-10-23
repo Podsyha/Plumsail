@@ -1,0 +1,8 @@
+﻿/test.pdf
+/.local-chromium/
+/.idea/
+/bin/
+/obj/
+/packages/
+riderModule.iml
+/_ReSharper.Caches/
