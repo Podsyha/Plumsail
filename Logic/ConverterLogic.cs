@@ -16,6 +16,10 @@ public class ConverterLogic : IConverterLogic
 
     public async Task SaveFileToLocalStorage(IFormFile file, Guid id)
     {
+        string exctentionFile = Path.GetExtension(file.FileName);
+        if (exctentionFile != ".html" && exctentionFile != ".htm" && exctentionFile != ".mhtml")
+            throw new InvalidOperationException("Extension file error");
+        
         string pathWithoutExt = Path.ChangeExtension(file.FileName, null);
         string fileName = pathWithoutExt.Length > 100 ? pathWithoutExt[..100] : pathWithoutExt;
         string filePath = $"{Directory.GetCurrentDirectory()}\\{_storageHtmlFolderName}\\{fileName} {id}.html";

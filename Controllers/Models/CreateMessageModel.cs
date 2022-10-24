@@ -6,7 +6,6 @@ public sealed class CreateMessageModel
     {
         FileName = fileName;
         Id = Guid.NewGuid();
-        DateAdded = DateTime.UtcNow;
     }
     /// <summary>
     /// ID задачи конвертации
@@ -16,8 +15,4 @@ public sealed class CreateMessageModel
     /// Имя файла
     /// </summary>
     public string FileName { get; set; }
-    /// <summary>
-    /// Дата добавления задачи
-    /// </summary>
-    public DateTime DateAdded { get; set; }
 }

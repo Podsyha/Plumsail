@@ -8,23 +8,46 @@
     <title>Document</title>
 </head>
 <body>
-    <input type="file">
-    <button>convert</button>
-    <script>
-        const input = document.querySelector("input")
-        const convertButton = document.querySelector("button")
-        convertButton.addEventListener("click", () => {        
-            const [file] = input.files
-            const formData = new FormData()
-            formData.append("file", file)
-            fetch("https://localhost:44326/Converter", {
-                "headers": {
-                    "accept": "*/*",
-                },
-                "body": formData,
-                "method": "POST",
-            });
-        })
-    </script>
+<input type="file">
+<button>convert</button>
+<script>
+    const input = document.querySelector("input")
+    const convertButton = document.querySelector("button")
+    convertButton.addEventListener("click", async () => {
+        const [file] = input.files
+        const formData = new FormData()
+        formData.append("file", file)
+        const {id, fileName} = await fetch("https://localhost:44326/convert", {
+            "headers": {
+                "accept": "*/*",
+            },
+            "body": formData,
+            "method": "POST",
+        }).then(r => r.json());
+
+        const timer = setInterval(async () => {
+            const {state} = await fetch("https://localhost:44326/converting-status?id=" + id).then(r => r.json())
+            if (state === "Converted") {
+                clearInterval(timer)
+                const data = await fetch("https://localhost:44326/file?" + new URLSearchParams({
+                    id,
+                    fileName
+                })).then(r => r.blob())
+                
+                const url = URL.createObjectURL(data)
+                const a = document.createElement("a")
+                a.download = fileName.slice(0, fileName.lastIndexOf(".")) + ".pdf"
+                a.href = url
+                document.body.appendChild(a)
+                a.click()
+                URL.revokeObjectURL(url)
+            }
+            else if(state === "Error: file not found" || state === "Error"){
+                clearInterval(timer)
+                alert(state)
+            }
+        }, 2000)
+    })
+</script>
 </body>
 </html>

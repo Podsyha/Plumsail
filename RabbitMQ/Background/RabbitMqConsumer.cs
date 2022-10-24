@@ -79,6 +79,7 @@ public class RabbitMqConsumer : BackgroundService
             ConvertingState state = new ConvertingState(convertModel.Id, "Error: file not found");
             _stateCache.AddCache(state);
             _channel.BasicAck(ea.DeliveryTag, false);
+            throw new NavigationException(e.Message);
         }
         catch (Exception e)
         {
