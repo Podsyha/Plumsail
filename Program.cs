@@ -1,4 +1,5 @@
-using Test_task.RabbitMQ;
+using Test_task.Infrastructure;
+using Test_task.Logic;
 using Test_task.RabbitMQ.Background;
 using Test_task.RabbitMQ.Connection;
 using Test_task.RabbitMQ.Service;
@@ -16,6 +17,8 @@ builder.Services.AddHostedService<RabbitMqConsumer>();
 
 builder.Services.AddSingleton<IRabbitMqService, RabbitMqService>();
 builder.Services.AddSingleton<IRabbitMqConnection, RabbitMqConnection>();
+builder.Services.AddSingleton<IStateCache, StateCache>();
+builder.Services.AddTransient<IConverterLogic, ConverterLogic>();
 
 var app = builder.Build();
 

@@ -8,8 +8,16 @@ public sealed class CreateMessageModel
         Id = Guid.NewGuid();
         DateAdded = DateTime.UtcNow;
     }
-    
-    public Guid Id { get; init; }
-    public string FileName { get; init; }
-    public DateTime DateAdded { get; init; }
+    /// <summary>
+    /// ID задачи конвертации
+    /// </summary>
+    public Guid Id { get; set; }
+    /// <summary>
+    /// Имя файла
+    /// </summary>
+    public string FileName { get; set; }
+    /// <summary>
+    /// Дата добавления задачи
+    /// </summary>
+    public DateTime DateAdded { get; set; }
 }

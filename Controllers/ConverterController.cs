@@ -1,7 +1,6 @@
 using Microsoft.AspNetCore.Mvc;
-using PuppeteerSharp;
 using Test_task.Controllers.Models;
-using Test_task.RabbitMQ;
+using Test_task.Logic;
 using Test_task.RabbitMQ.Service;
 
 namespace Test_task.Controllers;
@@ -10,42 +9,53 @@ namespace Test_task.Controllers;
 [Route("[controller]")]
 public sealed class ConverterController : ControllerBase
 {
-    private readonly IRabbitMqService _mqService;
-
-    public ConverterController(IRabbitMqService mqService)
+    public ConverterController(IRabbitMqService mqService, IConverterLogic converterLogic)
     {
         _mqService = mqService;
-    }
-
-    [HttpPost("/sendMessage")]
-    public async Task<IActionResult> SendMessage(IFormFile file)
-    {
-        await SaveFileToLocalStorage(file);
-        CreateMessageModel message = new(file.FileName);
-        
-        _mqService.SendMessage(message);
-
-        return Ok();
+        _converterLogic = converterLogic;
     }
     
-    [HttpPost("/convert")]
-    public async Task<IActionResult> Convert(IFormFile file)
-    {
-        string filePath = Path.Combine(@"C:\Users\User\RiderProjects\Test task\htmlFiles", file.FileName);
-        await using Stream fileStream = new FileStream(filePath, FileMode.Create);
-        await file.CopyToAsync(fileStream);
-        await using var browser = await Puppeteer.LaunchAsync(new LaunchOptions { Headless = true });
-        await using var page = await browser.NewPageAsync();
-        await page.GoToAsync(filePath);
-        await page.PdfAsync($"{Directory.GetCurrentDirectory()}\\test.pdf");
+    private readonly IRabbitMqService _mqService;
+    private readonly IConverterLogic _converterLogic;
 
-        return Ok();
+
+    /// <summary>
+    /// Конвертировать файл
+    /// </summary>
+    /// <param name="file"></param>
+    /// <returns></returns>
+    [HttpPost("/convert")]
+    public async Task<IActionResult> SendFile(IFormFile file)
+    {
+        CreateMessageModel message = new(file.FileName);
+        await _converterLogic.SaveFileToLocalStorage(file, message.Id);
+
+        _mqService.SendMessage(message);
+
+        return Ok(message);
     }
 
-    private async Task SaveFileToLocalStorage(IFormFile file)
+    /// <summary>
+    /// Получить статус конвертирования
+    /// </summary>
+    /// <param name="id"></param>
+    /// <returns></returns>
+    [HttpGet("/converting-status")]
+    public IActionResult GetConvertingStatus(Guid id) => 
+        Ok(_converterLogic.GetConvertingState(id));
+
+    /// <summary>
+    /// Получить сконвертированный файл
+    /// </summary>
+    /// <param name="id"></param>
+    /// <param name="fileName"></param>
+    /// <returns></returns>
+    [HttpGet("/file")]
+    public IActionResult GetPdfFile(Guid id, string fileName)
     {
-        string filePath = Path.Combine(@"C:\Users\User\RiderProjects\Test task\htmlFiles", file.FileName);
-        await using Stream fileStream = new FileStream(filePath, FileMode.Create);
-        await file.CopyToAsync(fileStream);
+        byte[] mas = System.IO.File.ReadAllBytes(_converterLogic.CheckExistFile(id, fileName));
+        string file_type = "application/pdf";
+        string file_name = $"{fileName}.pdf";
+        return File(mas, file_type, file_name);
     }
 }
