@@ -56,6 +56,8 @@ public class RabbitMqConsumer : BackgroundService
             ConvertingState state = new ConvertingState(convertModel.Id, "In progress");
 
             _stateCache.AddCache(state);
+            var browserFetcher = new BrowserFetcher();
+            await browserFetcher.DownloadAsync(); //при первом обращении будет скачан локальный хромиум
             await using var browser = await Puppeteer.LaunchAsync(new LaunchOptions { Headless = true });
             await using var page = await browser.NewPageAsync();
 
