@@ -1,4 +1,7 @@
 using Test_task.RabbitMQ;
+using Test_task.RabbitMQ.Background;
+using Test_task.RabbitMQ.Connection;
+using Test_task.RabbitMQ.Service;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -9,8 +12,10 @@ builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 builder.Services.AddCors();
+builder.Services.AddHostedService<RabbitMqConsumer>();
 
 builder.Services.AddSingleton<IRabbitMqService, RabbitMqService>();
+builder.Services.AddSingleton<IRabbitMqConnection, RabbitMqConnection>();
 
 var app = builder.Build();
 
@@ -22,7 +27,7 @@ if (app.Environment.IsDevelopment())
 }
 
 app.UseHttpsRedirection();
-app.UseCors(builder => builder.AllowAnyOrigin());
+app.UseCors(policyBuilder => policyBuilder.AllowAnyOrigin());
 app.UseAuthorization();
 
 app.MapControllers();

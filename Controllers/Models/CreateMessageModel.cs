@@ -2,6 +2,14 @@
 
 public sealed class CreateMessageModel
 {
-    public Guid Id { get; set; }
-    public string FileName { get; set; }
+    public CreateMessageModel(string fileName)
+    {
+        FileName = fileName;
+        Id = Guid.NewGuid();
+        DateAdded = DateTime.UtcNow;
+    }
+    
+    public Guid Id { get; init; }
+    public string FileName { get; init; }
+    public DateTime DateAdded { get; init; }
 }
