@@ -18,7 +18,7 @@ public class ConverterLogic : IConverterLogic
     {
         string exctentionFile = Path.GetExtension(file.FileName);
         if (exctentionFile != ".html" && exctentionFile != ".htm" && exctentionFile != ".mhtml")
-            throw new InvalidOperationException("Extension file error");
+            throw new ArgumentException("Extension file error");
         
         string pathWithoutExt = Path.ChangeExtension(file.FileName, null);
         string fileName = pathWithoutExt.Length > 100 ? pathWithoutExt[..100] : pathWithoutExt;
