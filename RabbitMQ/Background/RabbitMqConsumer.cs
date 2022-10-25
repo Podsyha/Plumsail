@@ -23,12 +23,12 @@ public class RabbitMqConsumer : BackgroundService
         _channel.QueueDeclare(queue: _queueName, durable: false, exclusive: false, autoDelete: false, arguments: null);
     }
     
-    private IConnection _connection;
-    private IModel _channel;
+    private readonly IConnection _connection;
+    private readonly IModel _channel;
     private readonly IStateCache _stateCache;
     private const string _queueName = "Task";
-    private string _storageHtmlFolderName = "htmlFiles";
-    private string _storagePdfFolderName = "PdfFiles";
+    private readonly string _storageHtmlFolderName = "htmlFiles";
+    private readonly string _storagePdfFolderName = "PdfFiles";
 
     protected override Task ExecuteAsync(CancellationToken stoppingToken)
     {
