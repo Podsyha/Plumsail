@@ -1,4 +1,4 @@
-# Converter html to pdf test task for C# backend developer
+# Converter HTML to PDF (test task for C# backend developer)
 
 Implement a web service. The service should accept an HTML file from a web client, convert it to PDF using Puppeteer Sharp, and return it somehow to the client.
 
